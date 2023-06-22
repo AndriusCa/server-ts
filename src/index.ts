@@ -1,37 +1,29 @@
-import { server } from ./src/libr/server.ts
+import { server } from "./libr/server.js"
 
-console.clear();
+console.clear()
 
 type App = {
-  init: () => void;
-
+  init: () => void
 }
 
-const app = {} as App;
+const app = {} as App
 
 app.init = () => {
   // susikurti reikiamus/trukstamus folderius ir failus
-  // atsinaujinti informacija 
-  // duombaze
-  // -prisijungti
-  // -pasiruosti struktura
-  // -surasyti pradinius duomenis
+  // atsinaujinti informacija
+  // duombaze:
+  // - prisijungti
+  // - pasiruosti struktura
+  // - surasyti pradinius duomenis
   // paleisti serverio logika
+  server.init()
+
   // laike pasikartojantys procesai:
-  // - issivalyti nereikalingus failus/info
+  // - isivalyti nereikalingus failus/info
   // - atnaujinti failus/info
   // - backup darymas
-  
-  
-  console.log(`Start server init`);
-  
-  
-
 }
 
-app.init();
+app.init()
 
-export default app;
-
-
-
+export default app

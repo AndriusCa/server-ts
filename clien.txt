@@ -1,0 +1,15 @@
+Klientas:
+--------------------------
+Internetas (lan, wifi)
+OS (network)
+Browser
+Tab
+
+
+
+PC (serveris):
+-------------------------
+Internetas (lan.wifi)
+OS: win11 (network)
+Nodejs - programa (port)
+Serverio projektas (JS)
