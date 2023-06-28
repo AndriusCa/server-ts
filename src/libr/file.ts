@@ -5,12 +5,18 @@ import { fileURLToPath } from "url"
 type File = {
   fullPath: (dir: string, fileName: string) => string
   fullPublicPath: (trimmedFilePath: string) => string
-  create: (dir: string, fileName: string, content: any) => Promise<[boolean, string | Error]>
-  read: (dir: string, fileName: string) => Promise<[boolean, string | Error]>
-  readPublic: (dir: string, fileName: string) => Promise<[boolean, string]>
-  readPublicBinary: (
+  create: (
+    dir: string,
+    fileName: string,
+    content: any
+  ) => Promise<[boolean, string | Error]>
+  read: (
     dir: string,
     fileName: string
+  ) => Promise<[false, string] | [true, Error]>
+  readPublic: (trimmedFilePath: string) => Promise<[boolean, string]>
+  readPublicBinary: (
+    trimmedFilePath: string
   ) => Promise<[boolean, string | Buffer]>
   update: (
     dir: string,
@@ -31,12 +37,12 @@ const file = {} as File
 file.fullPath = (dir: string, fileName: string): string => {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  return path.join(__dirname, "../../public/css", dir, fileName)
+  return path.join(__dirname, "../../.data", dir, fileName)
 }
 file.fullPublicPath = (trimmedFilePath: string) => {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  return path.join(__dirname, "../../public/css", trimmedFilePath)
+  return path.join(__dirname, "../../public", trimmedFilePath)
 }
 
 /**
@@ -46,7 +52,11 @@ file.fullPublicPath = (trimmedFilePath: string) => {
  * @param {object} content Objektas (pvz.: {...}), kuri norime irasyti i kuriama faila
  * @returns {Promise<[boolean, string | Error]>} Sekmes atveju - `true`; Klaidos atveju - klaidos pranesimas
  */
-file.create = async (dir: string, fileName: string,content: any): Promise<[boolean, string | Error]> => {
+file.create = async (
+  dir: string,
+  fileName: string,
+  content: any
+): Promise<[boolean, string | Error]> => {
   let fileDescriptor = null
   try {
     const filePath = file.fullPath(dir, fileName)
@@ -68,19 +78,18 @@ file.create = async (dir: string, fileName: string,content: any): Promise<[boole
  * @param {string} fileName Norimo failo pavadinimas su jo pletiniu
  * @returns {Promise<[boolean, string | Error]>} Sekmes atveju - failo turinys; Klaidos atveju - klaida
  */
-
-              //turi zinoti is kur ateina dir
-file.read = async (dir: string, fileName: string): Promise<[boolean, string | Error]> => {
-  try {
-    const filePath = file.fullPath(dir, fileName)  // 1. dalykas rasti kur tas failas yra
-    const fileContent = await fs.readFile(filePath, "utf-8") //2. bandyti perskaityti
+file.read = async (dir: string, fileName: string): Promise<[false, string] | [true, Error]> => {
+  try {const filePath = file.fullPath(dir, fileName)
+    const fileContent = await fs.readFile(filePath, "utf-8")
     return [false, fileContent]
   } catch (error) {
-    return [true, error] as [boolean, Error]
+    return [true, error as Error]
   }
 }
 
-file.readPublic = async (trimmedFilePath: string): Promise<[boolean, string]> => {
+file.readPublic = async (
+  trimmedFilePath: string
+): Promise<[boolean, string]> => {
   try {
     const filePath = file.fullPublicPath(trimmedFilePath)
     const fileContent = await fs.readFile(filePath, "utf-8")
@@ -90,7 +99,9 @@ file.readPublic = async (trimmedFilePath: string): Promise<[boolean, string]> =>
   }
 }
 
-file.readPublicBinary = async (trimmedFilePath: string): Promise<[boolean, string | Buffer]> => {
+file.readPublicBinary = async (
+  trimmedFilePath: string
+): Promise<[boolean, string | Buffer]> => {
   try {
     const filePath = file.fullPublicPath(trimmedFilePath)
     const fileContent = await fs.readFile(filePath)
@@ -107,7 +118,11 @@ file.readPublicBinary = async (trimmedFilePath: string): Promise<[boolean, strin
  * @param {Object} content JavaScript objektas, pvz.: `{name: "Marsietis"}`.
  * @returns {Promise<[boolean, string | Error]>} Pozymis, ar funkcija sekmingai atnaujintas nurodyta faila.
  */
-file.update = async (dir: string, fileName: string, content: any ): Promise<[boolean, string | Error]> => {
+file.update = async (
+  dir: string,
+  fileName: string,
+  content: any
+): Promise<[boolean, string | Error]> => {
   let fileDescriptor = null
   try {
     const filePath = file.fullPath(dir, fileName)
@@ -143,4 +158,4 @@ file.delete = async (
   }
 }
 
-export { file };
+export { file }
